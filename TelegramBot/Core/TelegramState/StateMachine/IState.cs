@@ -1,7 +1,4 @@
-﻿using System.Threading.Tasks;
-using MongoDB.Bson.Serialization.Attributes;
-
-namespace StateMachineBot
+﻿namespace TelegramBot.Core.TelegramState.StateMachine
 {
     public interface IState
     {

@@ -1,12 +1,11 @@
-﻿using ConsoleApp2.SettingWritter;
-using MongoDB.Driver;
-using StateMachineBot;
+﻿using MongoDB.Driver;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using TelegramBot.Core.TelegramState.StateMachine;
 using TelegramBot.Data;
+using TelegramBot.SettingWriter;
 
-namespace TelegramBot.Core.Commands;
+namespace TelegramBot.Core.Commands.Command;
 
 public class SwitchCreateSettings : Command
 {
@@ -24,28 +23,41 @@ public class SwitchCreateSettings : Command
     {
         
         var commandsList = SetListCommands();
+        
         if (state.StateCommand == "")
         {
             state.ActionCommand = "/switchsettings";
+            
             state.StateCommand = "start";
         }
+
+        state.Id = message.Chat.Id;
+        
         switch (state.StateCommand)
         {
             case "start":
+                
                 await client.SendTextMessageAsync(message.Chat.Id, "Добавить настройки для:" +
                                                                    "\n1. Rabota.ua" +
                                                                    "\n2. Work.Ua" +
                                                                    "\n3. Dou.ua" +
                                                                    "\n4. Назад");
                 state.ActionCommand = "/switchsettings";
+                
                 state.StateCommand = "choice";
+                
                 break;
+            
             case "choice":
                 
                 state.ActionCommand = "/createsettings";
+                
                 state.StateCommand = "";
-                await _context.StateMachine.ReplaceOneAsync((e => e.Id == message.Chat.Id), state);
+                
+                await _stateMachine.UpdateState(state);
+                
                 var currentState = await _context.SettingState.FindAsync(f => f.UserId == message.Chat.Id).Result.FirstOrDefaultAsync();
+                
                 if(currentState == null)
                     await _context.SettingState.InsertOneAsync(await _settingRabota.CreateWriter(new RabotaUa(),message.Chat.Id));
                 
@@ -53,20 +65,69 @@ public class SwitchCreateSettings : Command
                 {
                     
                     case "1":
+                        
                         foreach (var cm in commandsList)
                         {
                           
                             if (cm.Equals(state.ActionCommand))
                             {
                                 cm.Execute(state.ActionCommand,message, client,state);
+                                
                                 break;
                             }
                         }
                         break;
+                    case "2":
+                        foreach (var cm in commandsList)
+                        {
+                          
+                            if (cm.Equals(state.ActionCommand))
+                            {
+                                cm.Execute(state.ActionCommand,message, client,state);
+                                
+                                break;
+                            }
+                        }
+                        break;
+                    case "3":
+                        foreach (var cm in commandsList)
+                        {
+                          
+                            if (cm.Equals(state.ActionCommand))
+                            {
+                                cm.Execute(state.ActionCommand,message, client,state);
+                                
+                                break;
+                            }
+                        }
+                        break;
+                    case "4":
+                        foreach (var cm in commandsList)
+                        {
+                          
+                            if (cm.Equals(state.ActionCommand))
+                            {
+                                cm.Execute(state.ActionCommand,message, client,state);
+                                
+                                break;
+                            }
+                        }
+                        
+                        break;
+                    
+                    default:
+                        state.StateCommand = "choice";
+                        
+                        await _stateMachine.SetState(state);
+                        
+                        await client.SendTextMessageAsync(message.Chat.Id, "Неверный параметр! Выберите ещё раз:");
+                        
+                        break;
                 }
+                
                 break;
         }
-    
-        await _context.StateMachine.ReplaceOneAsync((e => e.Id == message.Chat.Id), state);
+
+        await _stateMachine.SetState(state);
     }
 }

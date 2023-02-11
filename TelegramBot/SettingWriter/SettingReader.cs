@@ -1,7 +1,6 @@
-﻿using TelegramBot;
-using TelegramBot.Models;
+﻿using TelegramBot.Models;
 
-namespace ConsoleApp2.SettingWritter;
+namespace TelegramBot.SettingWriter;
 
 public class SettingReader : ISettingReader
 {

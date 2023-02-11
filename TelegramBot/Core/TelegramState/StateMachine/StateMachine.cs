@@ -1,6 +1,5 @@
 using MongoDB.Bson.Serialization.Attributes;
 using MongoDB.Driver;
-using StateMachineBot;
 using TelegramBot.Data;
 
 namespace TelegramBot.Core.TelegramState.StateMachine

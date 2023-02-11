@@ -1,9 +1,7 @@
 ﻿using OpenQA.Selenium;
-using OpenQA.Selenium.Chrome;
 using TelegramBot.Core.TelegramState.StateMachine;
-using TelegramBot.Models;
 
-namespace TelegramBot.Parser;
+namespace TelegramBot.Parser.Core;
 
 public abstract class Parser : IParser
 {

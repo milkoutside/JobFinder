@@ -10,6 +10,7 @@ public class WorkUa : ISetting
     public string SiteName { get; } = "//Work.ua";
 
     public string Path { get; set; } = "https://www.work.ua/jobs-";
+    
     public string Job { get; set; }
 
     public string Category { get; set; } 

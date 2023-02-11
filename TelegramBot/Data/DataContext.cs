@@ -1,7 +1,4 @@
-﻿
-using JobFinder;
-using MongoDB.Driver;
-using StateMachineBot;
+﻿using MongoDB.Driver;
 using TelegramBot.Core.TelegramState.StateMachine;
 using TelegramBot.Models;
 

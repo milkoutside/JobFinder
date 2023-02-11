@@ -1,15 +1,11 @@
 ﻿using MongoDB.Driver;
-using StateMachineBot;
 using Telegram.Bot;
 using Telegram.Bot.Types;
-using Telegram.Bot.Types.Enums;
-using Telegram.Bot.Types.ReplyMarkups;
-using TelegramBot.Core.TelegramState;
 using TelegramBot.Core.TelegramState.StateMachine;
 using TelegramBot.Data;
 using TelegramBot.Models;
 
-namespace TelegramBot.Core.Commands;
+namespace TelegramBot.Core.Commands.Command;
 
 public class CreateSettings : Command
 {
@@ -26,7 +22,7 @@ public class CreateSettings : Command
     public override string Name => "/createsettings";
 
 
-    public override async void Execute(String command,Message message, ITelegramBotClient client,State state)
+    public override async void Execute(String command, Message message, ITelegramBotClient client, State state)
     {    
         
         var chatId = message.Chat.Id;

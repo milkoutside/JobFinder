@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-using MongoDB.Bson.Serialization.Attributes;
+﻿using MongoDB.Bson.Serialization.Attributes;
 
 namespace TelegramBot.Models;
 [BsonIgnoreExtraElements]

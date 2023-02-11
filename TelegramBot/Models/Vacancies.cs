@@ -1,6 +1,6 @@
 ﻿using MongoDB.Bson.Serialization.Attributes;
 
-namespace JobFinder;
+namespace TelegramBot.Models;
 
 [BsonIgnoreExtraElements]
 public class Vacancies

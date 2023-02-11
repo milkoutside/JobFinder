@@ -1,8 +1,6 @@
-﻿using TelegramBot;
-using TelegramBot.Core.TelegramState.StateMachine;
-using TelegramBot.Models;
+﻿using TelegramBot.Core.TelegramState.StateMachine;
 
-namespace ConsoleApp2.SettingWritter;
+namespace TelegramBot.SettingWriter;
 
 public class SettingWriter : ISettingWriter
 {
@@ -10,11 +8,17 @@ public class SettingWriter : ISettingWriter
     {
 
         SettingState userSettings = new SettingState();
+        
         userSettings.UserId = user;
+        
         userSettings.SiteName = setting.SiteName;
+        
         userSettings.Path = setting.Path;
+        
         userSettings.XCard = setting.XCard;
+        
         userSettings.XPublished = setting.XPublished;
+        
         return userSettings;
 
     }

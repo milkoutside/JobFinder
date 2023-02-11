@@ -10,7 +10,9 @@ namespace TelegramBot
         static void Main(string[] args)
         {
             BotWorker botWorker = new BotWorker(); 
+            
             botWorker.Start();
+            
             Console.ReadLine();
         }
         

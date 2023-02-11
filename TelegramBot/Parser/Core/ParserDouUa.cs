@@ -2,7 +2,7 @@
 using OpenQA.Selenium.Chrome;
 using TelegramBot.Core.TelegramState.StateMachine;
 
-namespace TelegramBot.Parser;
+namespace TelegramBot.Parser.Core;
 
 public class ParserDouUa : Parser
 {

@@ -1,4 +1,4 @@
-﻿namespace TelegramBot.Parser;
+﻿namespace TelegramBot.Parser.Core;
 
 public interface ICompare
 {

@@ -1,7 +1,4 @@
-using System.Threading.Tasks;
-using TelegramBot.Core.TelegramState.StateMachine;
-
-namespace StateMachineBot
+namespace TelegramBot.Core.TelegramState.StateMachine
 {
     public interface IStateMachine
     {

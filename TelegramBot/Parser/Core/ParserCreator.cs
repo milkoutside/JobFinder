@@ -1,6 +1,4 @@
-﻿using TelegramBot.Core.TelegramState.StateMachine;
-
-namespace TelegramBot.Parser;
+﻿namespace TelegramBot.Parser.Core;
 
 public abstract class ParserCreator
 {

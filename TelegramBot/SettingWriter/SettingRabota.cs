@@ -1,7 +1,6 @@
-﻿using TelegramBot;
-using TelegramBot.Core.TelegramState.StateMachine;
+﻿using TelegramBot.Core.TelegramState.StateMachine;
 
-namespace ConsoleApp2.SettingWritter;
+namespace TelegramBot.SettingWriter;
 
 public class SettingRabota : SettingFactory
 {

@@ -1,7 +1,6 @@
 ﻿using TelegramBot.Core.TelegramState.StateMachine;
-using TelegramBot.Models;
 
-namespace TelegramBot.Parser;
+namespace TelegramBot.Parser.Core;
 
 public interface IParser
 {

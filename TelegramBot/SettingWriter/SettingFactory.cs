@@ -1,8 +1,6 @@
-﻿using TelegramBot;
-using TelegramBot.Core.TelegramState.StateMachine;
-using TelegramBot.Models;
+﻿using TelegramBot.Core.TelegramState.StateMachine;
 
-namespace ConsoleApp2.SettingWritter;
+namespace TelegramBot.SettingWriter;
 
 public abstract class SettingFactory
 {
