@@ -1,4 +1,5 @@
 ﻿using MongoDB.Driver;
+using TelegramBot.Core.TelegramState;
 using TelegramBot.Core.TelegramState.StateMachine;
 using TelegramBot.Models;
 
@@ -26,11 +27,12 @@ public class DataContext
         
         SettingState = _context.GetCollection<SettingState>("SettingState");
 
-        
+        SearchState = _context.GetCollection<SearchState>("SearchState");
     }
 
 
     public IMongoCollection<SettingState> SettingState { get; set; }
+    public IMongoCollection<SearchState> SearchState { get; set; }
     
     public IMongoCollection<SettingState> GetSettings { get; set; }
     public IMongoCollection<UserSettings> Settings { get; set; }

@@ -118,7 +118,7 @@ public class SwitchCreateSettings : Command
                     default:
                         state.StateCommand = "choice";
                         
-                        await _stateMachine.SetState(state);
+                        await _stateMachine.UpdateState(state);
                         
                         await client.SendTextMessageAsync(message.Chat.Id, "Неверный параметр! Выберите ещё раз:");
                         
@@ -128,6 +128,6 @@ public class SwitchCreateSettings : Command
                 break;
         }
 
-        await _stateMachine.SetState(state);
+        await _stateMachine.UpdateState(state);
     }
 }

@@ -1,5 +1,7 @@
-﻿using Telegram.Bot;
+﻿using MongoDB.Driver;
+using Telegram.Bot;
 using Telegram.Bot.Types;
+using TelegramBot.Core.TelegramState;
 using TelegramBot.Core.TelegramState.StateMachine;
 using TelegramBot.Data;
 using TelegramBot.Parser;
@@ -11,8 +13,9 @@ public class StartCommand : Command
     public override string Name => "/start";
 
     private readonly DataContext _context;
+    
 
-    private ParserWorker _parserWorker;
+    private ParserWorker _parserWorker = new ParserWorker();
 
     private readonly StateMachine _stateMachine;
 
@@ -23,48 +26,96 @@ public class StartCommand : Command
         _stateMachine = new StateMachine(_context);
     }
 
-    public async override void Execute(String command, Message message, ITelegramBotClient client, State state)
+    public override async void Execute(String command, Message message, ITelegramBotClient client, State state)
     {
-        bool isWork = true;
-
-
-        _parserWorker = new ParserWorker();
         state.ActionCommand = "/start";
-        await _stateMachine.UpdateState(state);
-
-        CancellationTokenSource cts = new CancellationTokenSource();
-        CancellationToken ct = cts.Token;
+        
+        var searchState = await _context.SearchState.FindAsync((e => e.UserId == message.Chat.Id))
+            .Result.FirstOrDefaultAsync()??new SearchState()
+        {
+            _cts = new CancellationTokenSource(),
+            
+            UserId = message.Chat.Id,
+            
+            IsWork = "true"
+        };
+        
+        _cts = searchState._cts;
+        
         if (message.Text == "/stop")
         {
+            searchState.IsWork = "false";
             
-            cts.Cancel();
-            cts.Dispose();
-            await client.SendTextMessageAsync(message.Chat.Id, "end");
+            await _stateMachine.DeleteState(message.Chat.Id);
+            
+            await _context.SearchState.ReplaceOneAsync((f=>f.UserId == message.Chat.Id),searchState);
+            
+            await client.SendTextMessageAsync(message.Chat.Id, "Поиск остановлен!");
+            
+            StopLoop();
         }
 
-        await Task.Run(async () =>
+        if (message.Text == "/start")
         {
-            if (ct.IsCancellationRequested == false)
-            {
-                while (true)
-                {
+            searchState.UserId = message.Chat.Id;
+            
+            searchState.IsWork = "true";
+            
+            await _context.SearchState.InsertOneAsync(searchState);
+            
+            StartLoop(message, client);
 
-
-                    if (ct.IsCancellationRequested)
-                        break;
-
-                    await _parserWorker.Work(message, client, message.Chat.Id);
-                    Thread.Sleep(60000);
-
-                }
-            }
-
-            Console.WriteLine("end");
-        },ct);
-      
-
-
+        }
     }
+   
+    private CancellationTokenSource _cts;
+    private async Task RunLoopAsync(CancellationToken token,Message message, ITelegramBotClient client )
+    {
+        try
+        {
+            while (true)
+            {
+                var find = await _context.SearchState.FindAsync((e => e.UserId == message.Chat.Id)).Result.FirstOrDefaultAsync()??new SearchState();
+               
+                if (find.IsWork == "false")
+                {
+                    await _context.SearchState.DeleteOneAsync(f => f.UserId == message.Chat.Id);
+                    
+                    return;
+                }
+
+                await _parserWorker.Work(message, client, message.Chat.Id);
+                
+                await Task.Delay(120000, token); 
+            }
+        }
+        catch (OperationCanceledException)
+        { } 
+    }
+    private async void StartLoop(Message message, ITelegramBotClient client)
+    {
+
+        try
+        {
+            using (_cts = new CancellationTokenSource())
+            {
+                await RunLoopAsync(_cts.Token,message,client);
+            }
+        }
+        catch (Exception ex)
+        {
+            // ... ex.Message
+        }
+        _cts = null;
+    }
+
+    private void StopLoop()
+    {
+        _cts?.Cancel();
+    }
+
+
+    
 }
 
 
