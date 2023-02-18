@@ -6,7 +6,7 @@
 
 ### 2. Enter your token for telegram in ***SettingBot.cs***
 
-### 3. Connect your Database in ***DataContext***. I'm using MongoDb, but you can use any other database, but you will need to redo all methods related to the database code.
+### 3. Connect your Database in ***DataContext***. I'm using MongoDb, but you can use any other database and you will need to redo all methods related to the database code.
 
 ## for use you have commands:
 
