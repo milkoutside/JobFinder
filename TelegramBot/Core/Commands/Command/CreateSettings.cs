@@ -22,7 +22,7 @@ public class CreateSettings : Command
     public override string Name => "/createsettings";
 
 
-    public override async void Execute(String command, Message message, ITelegramBotClient client, State state)
+    public override async Task Execute(String command, Message message, ITelegramBotClient client, State state)
     {    
         
         var chatId = message.Chat.Id;

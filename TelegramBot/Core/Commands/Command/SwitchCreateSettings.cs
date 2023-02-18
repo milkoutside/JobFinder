@@ -19,7 +19,7 @@ public class SwitchCreateSettings : Command
     }
 
     public override string Name  => "/switchsettings";
-    public override async void Execute(String command,Message message, ITelegramBotClient client, State state)
+    public override async Task Execute(String command,Message message, ITelegramBotClient client, State state)
     {
         
         var commandsList = SetListCommands();
@@ -41,7 +41,7 @@ public class SwitchCreateSettings : Command
                                                                    "\n1. Rabota.ua" +
                                                                    "\n2. Work.Ua" +
                                                                    "\n3. Dou.ua" +
-                                                                   "\n4. Назад");
+                                                                   "\n4. Удалить все настройки");
                 state.ActionCommand = "/switchsettings";
                 
                 state.StateCommand = "choice";

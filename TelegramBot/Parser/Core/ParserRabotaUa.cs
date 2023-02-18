@@ -28,7 +28,7 @@ public class ParserRabotaUa : Parser
 
             }
 
-            List<string> timePublished = new List<string>() { "1 день назад", "2 дня назад", "3 дня назад","1 час назад"  };
+            List<string> timePublished = new List<string>() { "1 день назад", "2 дня назад", "3 дня назад" };
             
             for (int j = 1; j < 24; j++)
             {
@@ -37,12 +37,14 @@ public class ParserRabotaUa : Parser
                     case var num when j > 5 && j < 21:
                         
                         timePublished.Add($"{j} часов назад" );
+                        timePublished.Add($"{j} годин тому" );
                         
                         break;
                     
                     case 1:
                         
                         timePublished.Add($"{j} час назад" );
+                        timePublished.Add($"{j} година тому" );
                         
                         break;
                     
@@ -51,12 +53,14 @@ public class ParserRabotaUa : Parser
                     case 4:
                         
                         timePublished.Add($"{j} часа назад" );
+                        timePublished.Add($"{j} години тому" );
                         
                         break;
                     
                     default:
                         
                         timePublished.Add($"{j} часов назад" );
+                        timePublished.Add($"{j} годин тому" );
                         
                         break;
                 }
@@ -75,16 +79,12 @@ public class ParserRabotaUa : Parser
                 {
                     result.Add(cards[j + hotCards.Count].GetAttribute("href"));
                 }
-
-               
-
-
                 
             }
-            _driver.Close();
+            
             
             _driver.Quit();
-          
+            _driver.Dispose();
         }
         
         return result;

@@ -13,109 +13,36 @@ public class StartCommand : Command
     public override string Name => "/start";
 
     private readonly DataContext _context;
-    
 
-    private ParserWorker _parserWorker = new ParserWorker();
+
+    private ParserWorker _parserWorker;
 
     private readonly StateMachine _stateMachine;
 
 
     public StartCommand()
     {
-        _context = new DataContext();
-        _stateMachine = new StateMachine(_context);
+
     }
 
-    public override async void Execute(String command, Message message, ITelegramBotClient client, State state)
+    public override async Task Execute(String command, Message message, ITelegramBotClient client, State state)
     {
-        state.ActionCommand = "/start";
-        
-        var searchState = await _context.SearchState.FindAsync((e => e.UserId == message.Chat.Id))
-            .Result.FirstOrDefaultAsync()??new SearchState()
-        {
-            _cts = new CancellationTokenSource(),
-            
-            UserId = message.Chat.Id,
-            
-            IsWork = "true"
-        };
-        
-        _cts = searchState._cts;
-        
-        if (message.Text == "/stop")
-        {
-            searchState.IsWork = "false";
-            
-            await _stateMachine.DeleteState(message.Chat.Id);
-            
-            await _context.SearchState.ReplaceOneAsync((f=>f.UserId == message.Chat.Id),searchState);
-            
-            await client.SendTextMessageAsync(message.Chat.Id, "Поиск остановлен!");
-            
-            StopLoop();
-        }
+        var chatId = message.Chat.Id;
 
-        if (message.Text == "/start")
-        {
-            searchState.UserId = message.Chat.Id;
-            
-            searchState.IsWork = "true";
-            
-            await _context.SearchState.InsertOneAsync(searchState);
-            
-            StartLoop(message, client);
+        await client.SendTextMessageAsync(chatId,
+            "Это бот для поиска работы, который должен вам упростить поиск работы." +
+            "\nДля нормальной работы, у вас должны быть такие шаги:" +
+            "\n1.Вввод настроек(несколько или 1) - /switchsettings" +
+            "\n2Потом активируйте поиск - /startsearch " +
+            "\n3.Done!" +
+            "\nДля более детальной помощи - /help" +
+            "\nДодерживайтесь того, что указано в командах! Если не выполнять - есть большая вероятность ошибок, пока создатель их не пофиксит!" +
+            "\nПриятного использования.");
 
-        }
     }
-   
-    private CancellationTokenSource _cts;
-    private async Task RunLoopAsync(CancellationToken token,Message message, ITelegramBotClient client )
-    {
-        try
-        {
-            while (true)
-            {
-                var find = await _context.SearchState.FindAsync((e => e.UserId == message.Chat.Id)).Result.FirstOrDefaultAsync()??new SearchState();
-               
-                if (find.IsWork == "false")
-                {
-                    await _context.SearchState.DeleteOneAsync(f => f.UserId == message.Chat.Id);
-                    
-                    return;
-                }
-
-                await _parserWorker.Work(message, client, message.Chat.Id);
-                
-                await Task.Delay(120000, token); 
-            }
-        }
-        catch (OperationCanceledException)
-        { } 
-    }
-    private async void StartLoop(Message message, ITelegramBotClient client)
-    {
-
-        try
-        {
-            using (_cts = new CancellationTokenSource())
-            {
-                await RunLoopAsync(_cts.Token,message,client);
-            }
-        }
-        catch (Exception ex)
-        {
-            // ... ex.Message
-        }
-        _cts = null;
-    }
-
-    private void StopLoop()
-    {
-        _cts?.Cancel();
-    }
-
-
     
+
+
 }
 
 

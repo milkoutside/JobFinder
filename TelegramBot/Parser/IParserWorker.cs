@@ -1,11 +1,10 @@
 ﻿using Telegram.Bot;
 using Telegram.Bot.Types;
+using TelegramBot.Core.TelegramState;
 
 namespace TelegramBot.Parser;
 
 public interface IParserWorker
 {
-    public Task Work(Message message, ITelegramBotClient client,long id);
-
-    public Task Start();
+    public Task Start(Message message, ITelegramBotClient client,CancellationTokenSource cts);
 }

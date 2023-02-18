@@ -6,9 +6,11 @@ namespace TelegramBot.Core.Commands.Command;
 
 public abstract class Command
 {
+
+    public CancellationTokenSource Cts;
     public abstract string Name { get; }
 
-    public abstract void Execute(String command,Message message, ITelegramBotClient client,State state);
+    public abstract Task Execute(String command,Message message, ITelegramBotClient client,State state);
     public bool Equals(string command)
     {
         return command.Equals(this.Name);
@@ -23,6 +25,12 @@ public abstract class Command
         list.Add(new CreateSettings());
         
         list.Add(new SwitchCreateSettings());
+        
+        list.Add(new StartSearch());
+        
+        list.Add(new StopSearch());
+        list.Add(new HelpCommand());
+        list.Add(new DeleteAllSettings());
       
      
      

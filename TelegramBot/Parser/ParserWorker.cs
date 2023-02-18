@@ -1,6 +1,8 @@
 ﻿using MongoDB.Driver;
 using Telegram.Bot;
 using Telegram.Bot.Types;
+using TelegramBot.Core.TelegramState;
+using TelegramBot.Core.TelegramState.StateMachine;
 using TelegramBot.Data;
 using TelegramBot.Models;
 using TelegramBot.Parser.Core;
@@ -10,27 +12,27 @@ namespace TelegramBot.Parser;
 
 public class ParserWorker : IParserWorker
 {
-    private readonly DataContext _context;
-
-    private readonly SettingFactory _settingFactory = new SettingRabota();
-
-    private  ParserCreator _parserCreator;
     
-    public ParserWorker()
+    private  ParserCreator _parserCreator;
+
+    private DataContext context;
+    
+    
+    public ParserWorker(DataContext _context)
     {
-        _context = new DataContext();
-   
+        context = _context;
     }
 
-    public async Task Work(Message message, ITelegramBotClient client,long id)
+    public async Task Work(Message message, ITelegramBotClient client,CancellationTokenSource cts)
     {
         _parserCreator = new RabotaCreator();
 
-        var rabotaSettings = await _context.GetSettings.FindAsync((f => f.UserId == id)).Result.ToListAsync();
+        var setting = await context.GetSettings.FindAsync(f => f.UserId == message.Chat.Id)
+            .Result.ToListAsync();
 
-        var rabotaData = await _parserCreator.CreateParser().SearchVacancies(rabotaSettings);
+        var rabotaData = await _parserCreator.CreateParser().SearchVacancies(setting);
         
-        var pastVacancies = new List<string>(( await _context.Vacancies.FindAsync(v=>v.UserId == message.Chat.Id)
+        var pastVacancies = new List<string>(( await context.Vacancies.FindAsync(v=>v.UserId == message.Chat.Id)
             .Result.ToListAsync()??new List<Vacancies>()).Select(s=>s.Href)).ToList();
         
         var listVacancies = await _parserCreator.Compare().CompareVacancies(rabotaData,pastVacancies);
@@ -43,17 +45,22 @@ public class ParserWorker : IParserWorker
             
             v.Href = listVacancies[i];
             
-            v.UserId = id;
+            v.UserId = message.Chat.Id;
             
             dataVacancies.Add(v);
         }
-        if (listVacancies.Count > 0)
+
+        if (cts.IsCancellationRequested)
         {
-            await _context.Vacancies.InsertManyAsync(dataVacancies);
+            cts.Token.ThrowIfCancellationRequested();
+            return;
         }
+        
 
         if (listVacancies.Count > 0)
         {
+            await context.Vacancies.InsertManyAsync(dataVacancies);
+            
             foreach (var v in listVacancies)
             {
                 await client.SendTextMessageAsync(message.Chat.Id, $"Новая вакансия по вашем критериям {v}");
@@ -63,14 +70,10 @@ public class ParserWorker : IParserWorker
         {
             await client.SendTextMessageAsync(message.Chat.Id, "Новые вакансий не найдено! Продолжим поиски через 10 минут.");
         }
-
-    
-
-      
     }
     
-    public Task Start()
+    public async Task Start(Message message, ITelegramBotClient client,CancellationTokenSource cts)
     {
-        throw new NotImplementedException();
+        await Work(message, client, cts);
     }
 }
