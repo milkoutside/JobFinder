@@ -4,7 +4,7 @@
 
 ### 1. Copy repository : `gh repo clone witchblvd/JobFinder`
 
-### 2. Enter your token for telegram in ***SettingBot.cs***
+### 2. Enter your token for telegram in ***TelegramClient.cs*** such variable ***_botclient***
 
 ### 3. Connect your Database in ***DataContext***. I'm using MongoDb, but you can use any other database and you will need to redo all methods related to the database code.
 
