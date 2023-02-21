@@ -1,6 +1,6 @@
 ﻿using MongoDB.Bson.Serialization.Attributes;
 
-namespace TelegramBot.Models;
+namespace JobFinder.Models;
 [BsonIgnoreExtraElements]
 public class UserSettings : ISetting
 {
@@ -64,14 +64,16 @@ public class UserSettings : ISetting
                             _job = _job.Replace(" ", "+");
                             break;
                     }
-                    Path = Path + $"{_job}/";
+                    Path = Path + $"{_job}";
                     break;
                 case var s when s.Contains("Dou"):
                     if (value == "")
                     {
                         value = "";
                     }
-                    _job = value;
+                    else
+                    {
+                        _job = value;
                         switch (value)
                         {
                             case var x when x.Contains('#'):
@@ -84,11 +86,14 @@ public class UserSettings : ISetting
                                 _job = _job.Replace(" ", "+");
                                 break;
                         }
+
                         Path = Path + $"search={_job}";
-                    
+
                         _job = "";
-                    
+                    }
+
                     break;
+                    
             }
 
         }
@@ -103,25 +108,53 @@ public class UserSettings : ISetting
             switch (SiteName)
             {
                 case var s when s.Contains("Rabota"):
-                    if(value != "")
+                    if (value == "")
                     {
-                        _category = "";
+                        value = "";
                     }
+                    _category = value;
+                    switch (value)
+                    {
+                        case var x when x.Contains('#'):
+                            _category = _category.Replace("#", "%2523");
+                            break;
+                        case var x when x.Contains('+'):
+                            _category = _category.Replace("+", "%252B");
+                            break;
+                        case var x when x.Contains(" "):
+                            _category = _category.Replace(" ", "-");
+                            break;
+                    }
+                    Path = Path + $"{_category}";
                     break;
                 case var s when s.Contains("Work"):
-                    if(value != null)
-                        Path = Path + $"search={_category = value}";
-                    else
+                    if (value == "")
                     {
-                        _category = "";
+                        value = "";
                     }
+                    _category = value;
+                    switch (value)
+                    {
+                        case var x when x.Contains('#'):
+                            _category = _category.Replace("#", "%23");
+                            break;
+                        case var x when x.Contains('+'):
+                            _category = _category.Replace("+", "%2B");
+                            break;
+                        case var x when x.Contains(" "):
+                            _category = _category.Replace(" ", "+");
+                            break;
+                    }
+                    Path = Path + $"{_category}";
                     break;
                 case var s when s.Contains("Dou"):
-                    if(value != null)
-                        Path = Path + $"search={_category = value}";
+                    if (value == "")
+                    {
+                        value = "";
+                    }
                     else
                     {
-                        _category = "";
+                        Path = Path + $"category={_category = value}";
                     }
                     break;
             }
@@ -138,14 +171,16 @@ public class UserSettings : ISetting
             switch (SiteName)
             {
                 case var s when s.Contains("Rabota"):
-                    if(value != null)
+                    if(value != "")
                         Path = Path + $"/{_city = value}";
                     break;
                 case var s when s.Contains("Work"):
-                    Path = Path + $"{_city = value}-";
+                    if(value != "")
+                        Path = Path + $"{_city = value}-";
                     break;
                 case var s when s.Contains("Dou"):
-                    Path = Path + $"?city={_city = value}&";
+                    if(value != "")
+                        Path = Path + $"?city={_city = value}&";
                     break;
             }
 

@@ -1,6 +1,6 @@
-﻿using TelegramBot.Models;
+﻿using JobFinder.Models;
 
-namespace TelegramBot.SettingWriter;
+namespace JobFinder.SettingWriter;
 
 public class SettingReader : ISettingReader
 {

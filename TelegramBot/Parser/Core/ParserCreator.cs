@@ -1,4 +1,4 @@
-﻿namespace TelegramBot.Parser.Core;
+﻿namespace JobFinder.Parser.Core;
 
 public abstract class ParserCreator
 {

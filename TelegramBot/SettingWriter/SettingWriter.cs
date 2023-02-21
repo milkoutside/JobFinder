@@ -1,6 +1,7 @@
-﻿using TelegramBot.Core.TelegramState.StateMachine;
+﻿using JobFinder.Models;
+using JobFinder.TelegramState.StateMachine;
 
-namespace TelegramBot.SettingWriter;
+namespace JobFinder.SettingWriter;
 
 public class SettingWriter : ISettingWriter
 {

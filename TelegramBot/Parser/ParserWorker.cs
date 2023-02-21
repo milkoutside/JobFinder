@@ -1,14 +1,12 @@
-﻿using MongoDB.Driver;
+﻿using JobFinder.Data;
+using JobFinder.Models;
+using JobFinder.Parser.Core;
+using MongoDB.Driver;
 using Telegram.Bot;
 using Telegram.Bot.Types;
-using TelegramBot.Core.TelegramState;
-using TelegramBot.Core.TelegramState.StateMachine;
-using TelegramBot.Data;
-using TelegramBot.Models;
-using TelegramBot.Parser.Core;
-using TelegramBot.SettingWriter;
 
-namespace TelegramBot.Parser;
+
+namespace JobFinder.Parser;
 
 public class ParserWorker : IParserWorker
 {
@@ -23,32 +21,33 @@ public class ParserWorker : IParserWorker
         context = _context;
     }
 
-    public async Task Work(Message message, ITelegramBotClient client,CancellationTokenSource cts)
+    private async Task Work(Message message, ITelegramBotClient client,CancellationTokenSource cts)
     {
         _parserCreator = new RabotaCreator();
 
         var setting = await context.GetSettings.FindAsync(f => f.UserId == message.Chat.Id)
             .Result.ToListAsync();
 
-        var rabotaData = await _parserCreator.CreateParser().SearchVacancies(setting);
+        List<string> listVacancies = new List<string>(await _parserCreator.CreateParser().SearchVacancies(setting.Where(s => s.SiteName.Contains("Rabota")).ToList()));
         
         var pastVacancies = new List<string>(( await context.Vacancies.FindAsync(v=>v.UserId == message.Chat.Id)
             .Result.ToListAsync()??new List<Vacancies>()).Select(s=>s.Href)).ToList();
         
-        var listVacancies = await _parserCreator.Compare().CompareVacancies(rabotaData,pastVacancies);
+        var compareVacancies = await _parserCreator.Compare().CompareVacancies(listVacancies,pastVacancies);
+
+        _parserCreator = new WorkCreator();
         
-        var dataVacancies = new List<Vacancies>();
+        listVacancies = new List<string>(await _parserCreator.CreateParser().SearchVacancies(setting.Where(s => s.SiteName.Contains("Work")).ToList()));
         
-        for (int i = 0; i < listVacancies.Count; i++)
-        {
-            var v = new Vacancies();
-            
-            v.Href = listVacancies[i];
-            
-            v.UserId = message.Chat.Id;
-            
-            dataVacancies.Add(v);
-        }
+        compareVacancies.AddRange(listVacancies);
+        
+        _parserCreator = new DouCreator();
+        
+        listVacancies = new List<string>(await _parserCreator.CreateParser().SearchVacancies(setting.Where(s => s.SiteName.Contains("Dou")).ToList()));
+        
+        compareVacancies.AddRange(listVacancies);
+       
+        var dataVacancies = compareVacancies.Select(t => new Vacancies { Href = t, UserId = message.Chat.Id }).ToList();
 
         if (cts.IsCancellationRequested)
         {
@@ -57,11 +56,11 @@ public class ParserWorker : IParserWorker
         }
         
 
-        if (listVacancies.Count > 0)
+        if (compareVacancies.Count > 0)
         {
             await context.Vacancies.InsertManyAsync(dataVacancies);
             
-            foreach (var v in listVacancies)
+            foreach (var v in compareVacancies)
             {
                 await client.SendTextMessageAsync(message.Chat.Id, $"Новая вакансия по вашем критериям {v}");
             }

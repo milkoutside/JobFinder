@@ -1,20 +1,30 @@
-﻿
-using TelegramBot.Core;
 
-namespace TelegramBot
+using JobFinder.Services;
+
+var builder = WebApplication.CreateBuilder(args);
+
+// Add services to the container.
+
+builder.Services.AddControllers();
+// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+builder.Services.AddSingleton<TelegramClient>();
+var app = builder.Build();
+
+// Configure the HTTP request pipeline.
+if (app.Environment.IsDevelopment())
 {
-    internal class Program
-    {
-
-
-        static void Main(string[] args)
-        {
-            BotWorker botWorker = new BotWorker(); 
-            
-            botWorker.Start();
-            
-            Console.ReadLine();
-        }
-        
-    }
+    app.UseSwagger();
+    app.UseSwaggerUI();
 }
+
+app.Services.GetRequiredService<TelegramClient>().GetBot().Wait();
+app.UseHttpsRedirection();
+
+
+app.UseAuthorization();
+
+app.MapControllers();
+
+app.Run();

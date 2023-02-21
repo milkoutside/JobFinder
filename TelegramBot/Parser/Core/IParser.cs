@@ -1,6 +1,6 @@
-﻿using TelegramBot.Core.TelegramState.StateMachine;
+﻿using JobFinder.TelegramState.StateMachine;
 
-namespace TelegramBot.Parser.Core;
+namespace JobFinder.Parser.Core;
 
 public interface IParser
 {

@@ -1,7 +1,7 @@
-﻿using OpenQA.Selenium;
-using TelegramBot.Core.TelegramState.StateMachine;
+﻿using JobFinder.TelegramState.StateMachine;
+using OpenQA.Selenium;
 
-namespace TelegramBot.Parser.Core;
+namespace JobFinder.Parser.Core;
 
 public abstract class Parser : IParser
 {

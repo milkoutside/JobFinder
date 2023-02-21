@@ -1,9 +1,9 @@
-﻿using MongoDB.Driver;
-using TelegramBot.Core.TelegramState;
-using TelegramBot.Core.TelegramState.StateMachine;
-using TelegramBot.Models;
+﻿using JobFinder.Models;
+using JobFinder.TelegramState;
+using JobFinder.TelegramState.StateMachine;
+using MongoDB.Driver;
 
-namespace TelegramBot.Data;
+namespace JobFinder.Data;
 
 public class DataContext
 {

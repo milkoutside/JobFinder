@@ -1,8 +1,7 @@
 ﻿using Telegram.Bot;
 using Telegram.Bot.Types;
-using TelegramBot.Core.TelegramState;
 
-namespace TelegramBot.Parser;
+namespace JobFinder.Parser;
 
 public interface IParserWorker
 {
