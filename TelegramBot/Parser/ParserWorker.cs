@@ -39,13 +39,13 @@ public class ParserWorker : IParserWorker
         
         listVacancies = new List<string>(await _parserCreator.CreateParser().SearchVacancies(setting.Where(s => s.SiteName.Contains("Work")).ToList()));
         
-        compareVacancies.AddRange(listVacancies);
+        compareVacancies.AddRange(await _parserCreator.Compare().CompareVacancies(listVacancies,pastVacancies));
         
         _parserCreator = new DouCreator();
         
         listVacancies = new List<string>(await _parserCreator.CreateParser().SearchVacancies(setting.Where(s => s.SiteName.Contains("Dou")).ToList()));
         
-        compareVacancies.AddRange(listVacancies);
+        compareVacancies.AddRange(await _parserCreator.Compare().CompareVacancies(listVacancies,pastVacancies));
        
         var dataVacancies = compareVacancies.Select(t => new Vacancies { Href = t, UserId = message.Chat.Id }).ToList();
 
