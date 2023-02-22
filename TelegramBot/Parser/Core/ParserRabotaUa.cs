@@ -27,7 +27,7 @@ public class ParserRabotaUa : Parser
                 case 1:
                         
                     timePublished.Add($"{j} час назад" );
-                    timePublished.Add($"{j} година тому" );
+                    timePublished.Add($"{j} годину тому" );
                         
                     break;
                     
@@ -51,14 +51,14 @@ public class ParserRabotaUa : Parser
         }
         IWebDriver _driver = new ChromeDriver();
 
-        var repeat = false;
+        var repeat = 1;
         
         for (int i = 0; i < settings.Count; i++)
         {
             
-            _driver.Url = settings[i].Path;
+            _driver.Url = settings[i].Path + $"?page={repeat}";
             
-            for (int k = 0; k < 30; k++)
+            for (int k = 0; k < 35; k++)
             {
                 IJavaScriptExecutor js = (IJavaScriptExecutor)_driver;
                 
@@ -86,11 +86,10 @@ public class ParserRabotaUa : Parser
                 }
             }
 
-            if (!repeat && cards.Count < 14)
+            if (repeat < 3 && result.Count < 14)
             {
                 i--;
-                repeat = true;
-                _driver.Url += "?page=2";
+                repeat++;
             }
 
             

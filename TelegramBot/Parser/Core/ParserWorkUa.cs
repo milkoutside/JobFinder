@@ -23,6 +23,7 @@ public class ParserWorkUa : Parser
                 case var num when j > 5 && j < 21:
                         
                     timePublished.Add($"{j} часов назад" );
+                    timePublished.Add($"{j} ч. назад" );
                     timePublished.Add($"{j} год. тому" );
                         
                     break;
@@ -30,6 +31,7 @@ public class ParserWorkUa : Parser
                 case 1:
                         
                     timePublished.Add($"{j} час назад" );
+                    timePublished.Add($"{j} ч. назад" );
                     timePublished.Add($"{j} год. тому" );
                         
                     break;
@@ -39,6 +41,7 @@ public class ParserWorkUa : Parser
                 case 4:
                         
                     timePublished.Add($"{j} часа назад" );
+                    timePublished.Add($"{j} ч. назад" );
                     timePublished.Add($"{j} год. тому" );
                         
                     break;
@@ -46,6 +49,7 @@ public class ParserWorkUa : Parser
                 default:
                         
                     timePublished.Add($"{j} часов назад" );
+                    timePublished.Add($"{j} ч. назад" );
                     timePublished.Add($"{j} год. тому" );
                         
                     break;
@@ -55,12 +59,12 @@ public class ParserWorkUa : Parser
 
         IWebDriver _driver = new ChromeDriver();
 
-        var repeat = false;
+        var repeat = 1;
 
         for (int i = 0; i < settings.Count; i++)
         {
 
-            _driver.Url = settings[i].Path;
+            _driver.Url = settings[i].Path + $"?page={repeat}";;
 
             for (int k = 0; k < 30; k++)
             {
@@ -90,11 +94,10 @@ public class ParserWorkUa : Parser
                 
             }
 
-            if (!repeat && cards.Count < 14)
+            if (repeat < 3 && result.Count < 14)
             {
                 i--;
-                repeat = true;
-                _driver.Url += "?page=2";
+                repeat++;
             }
 
 
